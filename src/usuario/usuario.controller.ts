@@ -17,9 +17,15 @@ export class UsuarioController {
     return this.usuarioService.findAll();
   }
 
-  @Get(':id')
+  /*@Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usuarioService.findOne(+id);
+    return this.usuarioService.findOne(+id); 
+  }*/
+
+  @Get(':documento/:clave')
+  LoginUsuario(@Param('documento') documento: string, @Param('clave') clave: string,) 
+  {
+    return this.usuarioService.LoginUsuario(documento, clave);
   }
 
   @Patch(':id')
