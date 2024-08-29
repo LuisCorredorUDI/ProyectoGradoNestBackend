@@ -1,9 +1,7 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
-
 @Entity('USUARIO')
 export class Usuario {
-
     @PrimaryColumn({ name: 'ID' })
     ID: number;
 
@@ -39,6 +37,5 @@ export class Usuario {
 
     @Column({ name: 'CODIGOTIPOUSUARIO' })
     CODIGOTIPOUSUARIO: number;
-
 }
 

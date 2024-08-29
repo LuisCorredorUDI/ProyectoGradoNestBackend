@@ -2,10 +2,13 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Usuario } from './usuario/entities/usuario.entity';
 import { UsuarioController } from './usuario/usuario.controller';
 import { UsuarioService } from './usuario/usuario.service';
-import { Usuario } from './usuario/entities/usuario.entity';
-import { FuncionesGlobale } from './funciones-globales/entities/funciones-globale.entity';
+import { Evento } from './evento/entities/evento.entity';
+import { EventoController } from './evento/evento.controller';
+import { EventoService } from './evento/evento.service';
+
 
 @Module({
   imports: [
@@ -20,9 +23,9 @@ import { FuncionesGlobale } from './funciones-globales/entities/funciones-global
       synchronize: false,             // No recomendado en producción, genera automáticamente las tablas
     }),
     TypeOrmModule.forFeature([Usuario]),
-    TypeOrmModule.forFeature([FuncionesGlobale]),
+    TypeOrmModule.forFeature([Evento]),
   ],
-  controllers: [AppController, UsuarioController],
-  providers: [AppService, UsuarioService],
+  controllers: [AppController, UsuarioController, EventoController],
+  providers: [AppService, UsuarioService, EventoService],
 })
 export class AppModule {}
