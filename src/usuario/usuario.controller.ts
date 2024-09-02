@@ -23,7 +23,6 @@ export class UsuarioController {
   @Post('/CrearUsuario')
   async create(@Body() createUsuarioDto: CreateUsuarioDto, @Res() respuesta) {
     const idMaximo = await this.usuarioService.MaximoIdUsuario()+1;
-    createUsuarioDto.ID = idMaximo;
     //Armamos consulta
     const queryEnvia = "INSERT INTO USUARIO VALUES("+idMaximo+",'"+createUsuarioDto.NOMBRES+"','"+createUsuarioDto.APELLIDOS+"','"+createUsuarioDto.DOCUMENTO+"', '"+createUsuarioDto.CLAVEINGRESO+"', null, "+createUsuarioDto.NUMEROTELEFONO+", "+createUsuarioDto.NUMEROMOVIL+", '"+createUsuarioDto.CORREO+"', '"+createUsuarioDto.DIRECCION+"', "+createUsuarioDto.ESTADO+", "+createUsuarioDto.CODIGOTIPOUSUARIO+") ";
     //console.log(queryEnvia);

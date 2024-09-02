@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpStatus } from '@nestjs/common';
 import { EventoService } from './evento.service';
 import { CreateEventoDto } from './dto/create-evento.dto';
 import { UpdateEventoDto } from './dto/update-evento.dto';
@@ -9,10 +9,7 @@ import { UpdateEventoDto } from './dto/update-evento.dto';
 export class EventoController {
   constructor(private readonly eventoService: EventoService) {}
 
-  @Post()
-  create(@Body() createEventoDto: CreateEventoDto) {
-    return this.eventoService.create(createEventoDto);
-  }
+
 
   @Get()
   findAll() {
@@ -24,13 +21,36 @@ export class EventoController {
     return this.eventoService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEventoDto: UpdateEventoDto) {
-    return this.eventoService.update(+id, updateEventoDto);
+  //crud
+
+  @Post('/CrearEvento')
+  async create(@Body() createEventoDto: CreateEventoDto, @Res() respuesta) {
+    const idMaximo = await this.eventoService.MaximoIdEvento()+1;
+    //Armamos consulta
+    const queryEnvia = "INSERT INTO EVENTO VALUES("+idMaximo+",'"+createEventoDto.NOMBRE+"','"+createEventoDto.DETALLE+"', null, null, null) ";
+    //console.log(queryEnvia);
+    return this.eventoService.CrearEvento(queryEnvia)
+    .then(mensaje => { respuesta.status(HttpStatus.OK).json(mensaje) })
+    .catch(() => { respuesta.status(HttpStatus.FORBIDDEN).json('Error en la creación')});
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.eventoService.remove(+id);
+  @Patch('/ActualizarEvento/:id')
+  async update(@Param('id') id: string, @Body() updateEventoDto: UpdateEventoDto, @Res() respuesta) {
+    //Armamos consulta
+    const queryEnvia = "UPDATE EVENTO SET NOMBRE='"+updateEventoDto.NOMBRE+"', DETALLE='"+updateEventoDto.DETALLE+"' WHERE CODIGO="+id;
+    //console.log(queryEnvia);
+    return this.eventoService.ActualizarEvento(queryEnvia)
+    .then(mensaje => { respuesta.status(HttpStatus.OK).json(mensaje) })
+    .catch(() => { respuesta.status(HttpStatus.FORBIDDEN).json('Error en la edición')});
+  }
+
+  @Delete('/EliminarEvento/:id')
+  remove(@Param('id') id: string, @Res() respuesta) {
+    //Armamos consulta
+    const queryEnvia = "DELETE FROM EVENTO WHERE CODIGO="+id;
+    //console.log(queryEnvia);
+    return this.eventoService.EliminarEvento(queryEnvia)
+    .then(mensaje => { respuesta.status(HttpStatus.OK).json(mensaje) })
+    .catch(() => { respuesta.status(HttpStatus.FORBIDDEN).json('Error en la eliminación')});
   }
 }

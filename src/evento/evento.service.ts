@@ -13,8 +13,10 @@ export class EventoService {
     private readonly eventoRepository: Repository<Evento>
   ) {}
 
-  create(createEventoDto: CreateEventoDto) {
-    return 'This action adds a new evento';
+  //funcion para buscar el ID maximo para crear un usuario
+  async MaximoIdEvento(): Promise<number>{
+    const resultado = await this.eventoRepository.query('SELECT NVL(MAX(CODIGO),0) AS NUEVO FROM EVENTO');
+    return resultado[0]?.NUEVO || 0;
   }
 
   async findAll() {
@@ -25,11 +27,16 @@ export class EventoService {
     return `This action returns a #${id} evento`;
   }
 
-  update(id: number, updateEventoDto: UpdateEventoDto) {
-    return `This action updates a #${id} evento`;
+  //crud
+  async CrearEvento(consulta: string) {
+    return this.eventoRepository.query(consulta);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} evento`;
+  async ActualizarEvento(consulta: string) {
+    return this.eventoRepository.query(consulta);
+  }
+
+  async EliminarEvento(consulta: string) {
+    return this.eventoRepository.query(consulta);
   }
 }
