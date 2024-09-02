@@ -13,17 +13,15 @@ export class UsuarioService {
     private readonly usuarioRepository: Repository<Usuario>
   ){}
 
-  create(createUsuarioDto: CreateUsuarioDto) {
-    return 'This action adds a new usuario';
+  //funcion para buscar el ID maximo para crear un usuario
+  async MaximoIdUsuario(): Promise<number>{
+    const resultado = await this.usuarioRepository.query('SELECT NVL(MAX(ID),0) AS NUEVO FROM USUARIO');
+    return resultado[0]?.NUEVO || 0;
   }
 
   async findAll() {
     return await this.usuarioRepository.find();
   }
-
-  /*async findOne(id: number) {
-    return await this.usuarioRepository.find();
-  }*/
 
   async LoginUsuario(documento: string, clave: string): Promise<any> {
     // Consulta para verificar si existe el usuario y obtener su ID
@@ -55,12 +53,16 @@ export class UsuarioService {
     }
   }
     
-
-  update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return `This action updates a #${id} usuario`;
+  //CRUD
+  async CrearUsuario(consulta: string) {
+    return this.usuarioRepository.query(consulta);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} usuario`;
+  async ActualizarUsuario(consulta: string) {
+    return this.usuarioRepository.query(consulta);
+  }
+
+  async EliminarUsuario(consulta: string) {
+    return this.usuarioRepository.query(consulta);
   }
 }
