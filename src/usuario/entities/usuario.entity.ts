@@ -17,7 +17,7 @@ export class Usuario {
     @Column({ name: 'CLAVEINGRESO' })
     CLAVEINGRESO: string;
 
-    @Column({ name: 'CLAVEINGRESO' })
+    @Column({ name: 'FECHANACIMIENTO' })
     FECHANACIMIENTO: Date;
 
     @Column({ name: 'NUMEROTELEFONO' })

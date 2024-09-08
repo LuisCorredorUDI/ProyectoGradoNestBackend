@@ -11,10 +11,10 @@ export class UsuarioService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>
-  ){}
+  ) { }
 
   //funcion para buscar el ID maximo para crear un usuario
-  async MaximoIdUsuario(): Promise<number>{
+  async MaximoIdUsuario(): Promise<number> {
     const resultado = await this.usuarioRepository.query('SELECT NVL(MAX(ID),0) AS NUEVO FROM USUARIO');
     return resultado[0]?.NUEVO || 0;
   }
@@ -23,24 +23,11 @@ export class UsuarioService {
     return await this.usuarioRepository.find();
   }
 
-  async LoginUsuario(documento: string, clave: string): Promise<any> {
-    // Consulta para verificar si existe el usuario y obtener su ID
-    const queryText = 'SELECT ID FROM USUARIO WHERE DOCUMENTO = :documento AND CLAVEINGRESO = :clave';
+  async findOne(id: number) {
     try {
-      // Ejecutar la consulta personalizada con parámetros para evitar SQL Injection
-      const resultado = await this.usuarioRepository.query(queryText, [documento, clave]);
-  
-      // Verificar si se obtuvo algún resultado
-      if (resultado.length === 0) {
-        return null; // No se encontró ningún usuario
-      }
-  
-      // Extraer el ID del resultado
-      const usuarioId = resultado[0]?.ID;
-      
       // Si el ID existe, buscar el usuario completo usando findOne
-      const usuario = await this.usuarioRepository.findOne({ where: { ID: usuarioId } });
-  
+      const usuario = await this.usuarioRepository.findOne({ where: { ID: id } });
+
       // Verificar si el usuario fue encontrado y retornarlo completo
       if (usuario) {
         return usuario; // Retorna el objeto completo del usuario encontrado
@@ -52,7 +39,37 @@ export class UsuarioService {
       throw new Error('Error en la autenticación');
     }
   }
-    
+
+  async LoginUsuario(documento: string, clave: string): Promise<any> {
+    // Consulta para verificar si existe el usuario y obtener su ID
+    const queryText = 'SELECT ID FROM USUARIO WHERE DOCUMENTO = :documento AND CLAVEINGRESO = :clave AND ESTADO=1 ';
+    try {
+      // Ejecutar la consulta personalizada con parámetros para evitar SQL Injection
+      const resultado = await this.usuarioRepository.query(queryText, [documento, clave]);
+
+      // Verificar si se obtuvo algún resultado
+      if (resultado.length === 0) {
+        return null; // No se encontró ningún usuario
+      }
+
+      // Extraer el ID del resultado
+      const usuarioId = resultado[0]?.ID;
+
+      // Si el ID existe, buscar el usuario completo usando findOne
+      const usuario = await this.usuarioRepository.findOne({ where: { ID: usuarioId } });
+
+      // Verificar si el usuario fue encontrado y retornarlo completo
+      if (usuario) {
+        return usuario; // Retorna el objeto completo del usuario encontrado
+      } else {
+        return null; // Si no se encontró el usuario por alguna razón
+      }
+    } catch (error) {
+      console.error('Error al ejecutar la consulta:', error);
+      throw new Error('Error en la autenticación');
+    }
+  }
+
   //CRUD
   async CrearUsuario(consulta: string) {
     return this.usuarioRepository.query(consulta);
@@ -65,4 +82,6 @@ export class UsuarioService {
   async EliminarUsuario(consulta: string) {
     return this.usuarioRepository.query(consulta);
   }
+
+
 }
