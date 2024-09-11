@@ -8,6 +8,12 @@ import { UsuarioService } from './usuario/usuario.service';
 import { Evento } from './evento/entities/evento.entity';
 import { EventoController } from './evento/evento.controller';
 import { EventoService } from './evento/evento.service';
+import { Pqr } from './pqr/entities/pqr.entity';
+import { PqrController } from './pqr/pqr.controller';
+import { PqrService } from './pqr/pqr.service';
+import { Derecho } from './derecho/entities/derecho.entity';
+import { DerechoController } from './derecho/derecho.controller';
+import { DerechoService } from './derecho/derecho.service';
 
 
 @Module({
@@ -24,8 +30,10 @@ import { EventoService } from './evento/evento.service';
     }),
     TypeOrmModule.forFeature([Usuario]),
     TypeOrmModule.forFeature([Evento]),
+    TypeOrmModule.forFeature([Pqr]),
+    TypeOrmModule.forFeature([Derecho])
   ],
-  controllers: [AppController, UsuarioController, EventoController],
-  providers: [AppService, UsuarioService, EventoService],
+  controllers: [AppController, UsuarioController, EventoController, PqrController, DerechoController],
+  providers: [AppService, UsuarioService, EventoService, PqrService, DerechoService],
 })
 export class AppModule {}

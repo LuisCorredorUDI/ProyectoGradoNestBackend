@@ -79,8 +79,6 @@ export class UsuarioController {
     }
   }
 
-
-
   @Patch('/ActualizarUsuario/:id')
   async update(
     @Param('id') id: string,
@@ -141,7 +139,6 @@ export class UsuarioController {
       return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
     }
   }
-
 
   @Delete('/EliminarUsuario/:id')
   async remove(@Param('id') id: string, @Res() respuesta) {
