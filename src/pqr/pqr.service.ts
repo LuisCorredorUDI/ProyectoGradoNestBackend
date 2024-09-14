@@ -19,14 +19,50 @@ export class PqrService {
     return resultado[0]?.NUEVO || 0;
   }
 
-  findAll() {
-    return `This action returns all pqr`;
+  //Listado pqr por usuario especifico
+  async BusquedaPqrPorUsuario(queryConsulta: string, parametros: any) {
+    try {
+      // Ejecutar la consulta con los parámetros para evitar inyección SQL
+      const pqrList = await this.pqrRepository.query(queryConsulta, parametros);
+      return pqrList;
+    } catch (error) {
+      console.error('Error al ejecutar la consulta de PQR por usuario:', error); // Log del error
+
+      // Lanzar una excepción con un mensaje de error específico
+      throw new InternalServerErrorException('Error ejecutando la consulta SQL para buscar PQR por usuario.', error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pqr`;
+  //Listado pqr por usuario especifico
+  async BusquedaPqrPorCoordinador(queryConsulta: string) {
+    try {
+      // Ejecutar la consulta con los parámetros para evitar inyección SQL
+      const pqrList = await this.pqrRepository.query(queryConsulta);
+      return pqrList;
+    } catch (error) {
+      console.error('Error al ejecutar la consulta de PQR por usuario:', error); // Log del error
+
+      // Lanzar una excepción con un mensaje de error específico
+      throw new InternalServerErrorException('Error ejecutando la consulta SQL para buscar PQR por usuario.', error.message);
+    }
   }
 
+  //DETALLE
+  //DETALLE pqr por coordinador
+  async BusquedaDetalleService(queryConsulta: string, parametros: any) {
+    try {
+      // Ejecutar la consulta con los parámetros para evitar inyección SQL
+      const pqrDetalle = await this.pqrRepository.query(queryConsulta, parametros);
+      return pqrDetalle;
+    } catch (error) {
+      console.error('Error al ejecutar la consulta de PQR por usuario:', error); // Log del error
+
+      // Lanzar una excepción con un mensaje de error específico
+      throw new InternalServerErrorException('Error ejecutando la consulta SQL para buscar PQR por usuario.', error.message);
+    }
+  }
+
+  //CRUD
   async create(queryConsulta: string) {
     try {
       // Usa el método `query` de TypeORM con la consulta y los parámetros
@@ -37,12 +73,29 @@ export class PqrService {
     }
   }
 
-  /*
-  update(id: number, updatePqrDto: UpdatePqrDto) {
-    return `This action updates a #${id} pqr`;
-  }*/
+  async updateRespuestaService(queryConsulta: string, parametros: any) {
+    try {
+      // Usa el método `query` de TypeORM con la consulta y los parámetros
+      return await this.pqrRepository.query(queryConsulta, parametros);
+    } catch (error) {
+      // Manejo de errores si falla la ejecución de la consulta
+      throw new InternalServerErrorException('Error ejecutando la consulta SQL', error.message);
+    }
+  }
 
+  async updateCancelService(queryConsulta: string, parametros: any) {
+    try {
+      // Usa el método `query` de TypeORM con la consulta y los parámetros
+      return await this.pqrRepository.query(queryConsulta, parametros);
+    } catch (error) {
+      // Manejo de errores si falla la ejecución de la consulta
+      throw new InternalServerErrorException('Error ejecutando la consulta SQL', error.message);
+    }
+  }
+
+  /*
   remove(id: number) {
     return `This action removes a #${id} pqr`;
-  }
+  }*/
+
 }
