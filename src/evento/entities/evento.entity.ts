@@ -17,6 +17,9 @@ export class Evento {
     @Column({ name: 'FECHAFIN' })
     FECHAFIN: Date;
 
-    @Column({ name: 'IMAGEN' })
-    IMAGEN: Buffer;
+    @Column({ name: 'RUTAIMAGEN' })
+    RUTAIMAGEN: string;
+
+    @Column({ name: 'IDUSUARIOCREACION' })
+    IDUSUARIOCREACION: number;
 }

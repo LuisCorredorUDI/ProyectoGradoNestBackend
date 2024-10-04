@@ -19,12 +19,14 @@ export class EventoService {
     return resultado[0]?.NUEVO || 0;
   }
 
-  async findAll() {
-    return await this.eventoRepository.find();
+  //Listado de eventos para la gestion del cooordinador
+  async listadoEventosHomeService(consulta: string) {
+    return await this.eventoRepository.query(consulta);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} evento`;
+  //Listado de eventos para la gestion del cooordinador
+  async listadoEventosCoordinadorService(consulta: string) {
+    return await this.eventoRepository.query(consulta);
   }
 
   //crud
@@ -32,9 +34,11 @@ export class EventoService {
     return this.eventoRepository.query(consulta);
   }
 
+  /*
   async ActualizarEvento(consulta: string) {
     return this.eventoRepository.query(consulta);
   }
+  */
 
   async EliminarEvento(consulta: string) {
     return this.eventoRepository.query(consulta);

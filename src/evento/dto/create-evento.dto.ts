@@ -1,10 +1,13 @@
-import { Binary } from "typeorm";
+import { IsNotEmpty, IsOptional } from 'class-validator';
+
 
 export class CreateEventoDto {
-    CODIGO : number;
-    NOMBRE : string;
-    DETALLE : string;
-    FECHAINICIO : Date;
-    FECHAFIN : Date;
-    IMAGEN : Binary;
+    NOMBRE: string;
+    DETALLE: string;
+    FECHAINICIO: string;
+    FECHAFIN: string;
+    IMAGEN?: string;
+    IDUSUARIOCREACION: number;
 }
+
+
