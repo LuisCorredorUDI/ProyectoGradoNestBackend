@@ -34,12 +34,6 @@ export class EventoService {
     return this.eventoRepository.query(consulta);
   }
 
-  /*
-  async ActualizarEvento(consulta: string) {
-    return this.eventoRepository.query(consulta);
-  }
-  */
-
   async EliminarEvento(consulta: string) {
     return this.eventoRepository.query(consulta);
   }

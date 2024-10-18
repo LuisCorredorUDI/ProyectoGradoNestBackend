@@ -19,8 +19,22 @@ export class UsuarioService {
     return resultado[0]?.NUEVO || 0;
   }
 
+  //funcion para buscar el ID maximo para crear un acudiente
+  async MaximoIdAcudiente(): Promise<number> {
+    const resultado = await this.usuarioRepository.query('SELECT NVL(MAX(ID),0) AS NUEVO FROM ACUDIENTE');
+    return resultado[0]?.NUEVO || 0;
+  }
+
+  async ListadoPorVincularService(consulta: string) {
+    return this.usuarioRepository.query(consulta);
+  }
+
+  async ListadoVinculadosService(consulta: string) {
+    return this.usuarioRepository.query(consulta);
+  }
+
   async findAll() {
-    return await this.usuarioRepository.find();
+    return await this.usuarioRepository.find({order:{NOMBRES: 'ASC'}});
   }
 
   async findOne(id: number) {
@@ -71,6 +85,10 @@ export class UsuarioService {
   }
 
   //CRUD
+  async CrearAcudiente(consulta: string) {
+    return this.usuarioRepository.query(consulta);
+  }
+
   async CrearUsuario(consulta: string) {
     return this.usuarioRepository.query(consulta);
   }
@@ -83,5 +101,8 @@ export class UsuarioService {
     return this.usuarioRepository.query(consulta);
   }
 
+  async DesvincularAcudienteService(consulta: string) {
+    return this.usuarioRepository.query(consulta);
+  }
 
 }

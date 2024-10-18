@@ -9,8 +9,71 @@ export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) { }
 
   @Get()
-  findAll() {
+  ListadoCompletoUsuarios() {
     return this.usuarioService.findAll();
+  }
+
+  @Get('/ListadoPorVincular')
+  async ListadoPorVincularController(@Res() respuesta) {
+    try {
+      const queryEnvia = `SELECT U.* 
+                          FROM USUARIO U
+                          WHERE U.CODIGOTIPOUSUARIO = 3
+                          AND U.ID NOT IN (SELECT IDESTUDIANTE FROM ACUDIENTE)`;
+      console.log(queryEnvia); // Verificar la consulta generada
+      // Ejecutar la consulta y devolver la respuesta
+      const mensaje = await this.usuarioService.ListadoPorVincularService(queryEnvia);
+      return respuesta.status(HttpStatus.OK).json(mensaje);
+    }
+    catch (error) {
+      console.error('Error en la creación del usuario:', error); // Log del error para más detalles
+      // Mensaje detallado de error
+      let mensajeError = 'Error en la creación del usuario.';
+      if (error.code === 'ORA-00001') {
+        mensajeError += ' Violación de clave única: el usuario ya existe.';
+      } else if (error.code === 'ORA-01400') {
+        mensajeError += ' No se pueden insertar valores nulos en las columnas obligatorias.';
+      } else if (error.code === 'ORA-00984') {
+        mensajeError += ' Error en la sintaxis de la consulta. Revisa los datos ingresados.';
+      } else {
+        mensajeError += ` Error inesperado: ${error.message || error}`;
+      }
+      return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
+    }
+  }
+
+  @Get('/ListadoVinculados/:idacudiente')
+  async ListadoVinculadosController(@Param('idacudiente') idacudiente: string, @Res() respuesta) {
+    try {
+      const queryEnvia = `SELECT U.* 
+                          FROM USUARIO U
+                          WHERE U.ID IN 
+                          (
+                              SELECT IDESTUDIANTE 
+                              FROM ACUDIENTE 
+                              WHERE IDACUDIENTE=${idacudiente}
+                          )
+                          AND U.CODIGOTIPOUSUARIO = 3`;
+      console.log(queryEnvia); // Verificar la consulta generada
+      // Ejecutar la consulta y devolver la respuesta
+      const mensaje = await this.usuarioService.ListadoVinculadosService(queryEnvia);
+      return respuesta.status(HttpStatus.OK).json(mensaje);
+    }
+    catch (error) {
+      console.error('Error en la creación del usuario:', error); // Log del error para más detalles
+      // Mensaje detallado de error
+      let mensajeError = 'Error en la creación del usuario.';
+      if (error.code === 'ORA-00001') {
+        mensajeError += ' Violación de clave única: el usuario ya existe.';
+      } else if (error.code === 'ORA-01400') {
+        mensajeError += ' No se pueden insertar valores nulos en las columnas obligatorias.';
+      } else if (error.code === 'ORA-00984') {
+        mensajeError += ' Error en la sintaxis de la consulta. Revisa los datos ingresados.';
+      } else {
+        mensajeError += ` Error inesperado: ${error.message || error}`;
+      }
+      return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
+    }
   }
 
   @Get('/DetalleUsuario/:id')
@@ -25,8 +88,37 @@ export class UsuarioController {
   }
 
   //Crud
+  @Post('/CrearAcudiente/:idacudiente/:idestudiante')
+  async CrearAcudiente(@Param('idacudiente') idacudiente: string, @Param('idestudiante') idestudiante: string, @Res() respuesta) {
+    try {
+      const idMaximo = (await this.usuarioService.MaximoIdAcudiente()) + 1;
+      // Construcción de la consulta como cadena
+      const queryEnvia = `INSERT INTO ACUDIENTE(ID,IDESTUDIANTE,IDACUDIENTE) VALUES(${idMaximo}, ${idestudiante}, ${idacudiente})`;
+      console.log(queryEnvia); // Verificar la consulta generada
+      // Ejecutar la consulta y devolver la respuesta
+      const mensaje = await this.usuarioService.CrearAcudiente(queryEnvia);
+      return respuesta.status(HttpStatus.OK).json(mensaje);
+    } catch (error) {
+      console.error('Error en la creación del acudiente:', error); // Log del error para más detalles
+
+      // Mensaje detallado de error
+      let mensajeError = 'Error en la creación del acudiente.';
+      if (error.code === 'ORA-00001') {
+        mensajeError += ' Violación de clave única: el acudiente ya existe.';
+      } else if (error.code === 'ORA-01400') {
+        mensajeError += ' No se pueden insertar valores nulos en las columnas obligatorias.';
+      } else if (error.code === 'ORA-00984') {
+        mensajeError += ' Error en la sintaxis de la consulta. Revisa los datos ingresados.';
+      } else {
+        mensajeError += ` Error inesperado: ${error.message || error}`;
+      }
+
+      return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
+    }
+  }
+
   @Post('/CrearUsuario')
-  async create(@Body() createUsuarioDto: CreateUsuarioDto, @Res() respuesta) {
+  async CrearUsuario(@Body() createUsuarioDto: CreateUsuarioDto, @Res() respuesta) {
     try {
       const idMaximo = (await this.usuarioService.MaximoIdUsuario()) + 1;
 
@@ -80,7 +172,7 @@ export class UsuarioController {
   }
 
   @Patch('/ActualizarUsuario/:id')
-  async update(
+  async ActualizarUsuario(
     @Param('id') id: string,
     @Body() updateUsuarioDto: UpdateUsuarioDto,
     @Res() respuesta
@@ -141,30 +233,30 @@ export class UsuarioController {
   }
 
   @Delete('/EliminarUsuario/:id')
-  async remove(@Param('id') id: string, @Res() respuesta) {
+  async EliminarUsuario(@Param('id') id: string, @Res() respuesta) {
     // Validar que 'id' sea un número válido
     const idNumber = parseInt(id, 10);
     if (isNaN(idNumber)) {
       throw new BadRequestException('El parámetro ID debe ser un número válido.');
     }
-  
+
     try {
       // Construir la consulta usando parámetros para prevenir inyección SQL
-      const queryEnvia = "DELETE FROM USUARIO WHERE ID = "+id;
-      
+      const queryEnvia = "DELETE FROM USUARIO WHERE ID = " + id;
+
       // Ejecutar la consulta
       const result = await this.usuarioService.EliminarUsuario(queryEnvia);
-  
+
       // Comprobar si se eliminó alguna fila
       if (result.affected === 0) {
         throw new NotFoundException(`Usuario con ID ${idNumber} no encontrado.`);
       }
-  
+
       // Devolver respuesta exitosa
       return respuesta.status(HttpStatus.OK).json({ message: 'Usuario eliminado exitosamente' });
     } catch (error) {
       console.error('Error en la eliminación del usuario:', error);
-  
+
       // Determinar el tipo de error y devolver un mensaje adecuado
       if (error instanceof NotFoundException) {
         return respuesta.status(HttpStatus.NOT_FOUND).json({ message: error.message });
@@ -175,6 +267,29 @@ export class UsuarioController {
       }
     }
   }
-  
+
+  @Delete('/DesvincularAcudiente/:idacudiente/:idestudiante')
+  async DesvincularAcudienteController(@Param('idacudiente') idacudiente: string, @Param('idestudiante') idestudiante: string, @Res() respuesta) {
+    try {
+      // Construir la consulta usando parámetros para prevenir inyección SQL
+      const queryEnvia = `DELETE FROM ACUDIENTE WHERE IDACUDIENTE=${idacudiente} AND IDESTUDIANTE=${idestudiante}`;
+      console.log(queryEnvia);
+      // Ejecutar la consulta
+      const result = await this.usuarioService.DesvincularAcudienteService(queryEnvia);
+      // Devolver respuesta exitosa
+      return respuesta.status(HttpStatus.OK).json({ message: 'Desvinculacion completa' });
+    } catch (error) {
+      console.error('Error AL DESVINCULAR:', error);
+
+      // Determinar el tipo de error y devolver un mensaje adecuado
+      if (error instanceof NotFoundException) {
+        return respuesta.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      } else if (error instanceof BadRequestException) {
+        return respuesta.status(HttpStatus.BAD_REQUEST).json({ message: error.message });
+      } else {
+        return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error inesperado en la DESVINCULACION', error: error.message });
+      }
+    }
+  }
 
 }

@@ -91,19 +91,6 @@ export class EventoController {
     }
   }
 
-
-  /*
-  @Patch('/ActualizarEvento/:id')
-  async update(@Param('id') id: string, @Body() updateEventoDto: UpdateEventoDto, @Res() respuesta) {
-    //Armamos consulta
-    const queryEnvia = "UPDATE EVENTO SET NOMBRE='"+updateEventoDto.NOMBRE+"', DETALLE='"+updateEventoDto.DETALLE+"' WHERE CODIGO="+id;
-    //console.log(queryEnvia);
-    return this.eventoService.ActualizarEvento(queryEnvia)
-    .then(mensaje => { respuesta.status(HttpStatus.OK).json(mensaje) })
-    .catch(() => { respuesta.status(HttpStatus.FORBIDDEN).json('Error en la edición')});
-  }
-  */
-
   @Delete('/EliminarEvento/:id')
   remove(@Param('id') id: string, @Res() respuesta) {
     //Armamos consulta
