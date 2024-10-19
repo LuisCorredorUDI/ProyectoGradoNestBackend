@@ -24,6 +24,10 @@ export class CitacionService {
     return resultado[0]?.NUEVO || 0;
   }
 
+  DetalleCitacionObservacionService(consulta: string) {
+    return this.citacionRepository.query(consulta);
+  }
+
   ListadoCitacionesService(consulta: string) {
     return this.citacionRepository.query(consulta);
   }
