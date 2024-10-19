@@ -14,6 +14,12 @@ import { PqrService } from './pqr/pqr.service';
 import { Derecho } from './derecho/entities/derecho.entity';
 import { DerechoController } from './derecho/derecho.controller';
 import { DerechoService } from './derecho/derecho.service';
+import { Citacion } from './citacion/entities/citacion.entity';
+import { Observador } from './observador/entities/observador.entity';
+import { CitacionController } from './citacion/citacion.controller';
+import { CitacionService } from './citacion/citacion.service';
+import { ObservadorController } from './observador/observador.controller';
+import { ObservadorService } from './observador/observador.service';
 
 
 @Module({
@@ -31,9 +37,11 @@ import { DerechoService } from './derecho/derecho.service';
     TypeOrmModule.forFeature([Usuario]),
     TypeOrmModule.forFeature([Evento]),
     TypeOrmModule.forFeature([Pqr]),
-    TypeOrmModule.forFeature([Derecho])
+    TypeOrmModule.forFeature([Derecho]),
+    TypeOrmModule.forFeature([Citacion]),
+    TypeOrmModule.forFeature([Observador]),
   ],
-  controllers: [AppController, UsuarioController, EventoController, PqrController, DerechoController],
-  providers: [AppService, UsuarioService, EventoService, PqrService, DerechoService],
+  controllers: [AppController, UsuarioController, EventoController, PqrController, DerechoController, CitacionController, ObservadorController],
+  providers: [AppService, UsuarioService, EventoService, PqrService, DerechoService, CitacionService, ObservadorService],
 })
 export class AppModule {}
