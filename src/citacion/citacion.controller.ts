@@ -57,6 +57,7 @@ export class CitacionController {
                               C.FECHAINICIO, 
                               C.FECHAFIN, 
                               C.USUARIOCITACION,
+                              (SELECT U.NOMBRES||' '||U.APELLIDOS FROM USUARIO U WHERE U.ID = C.USUARIOCITACION) AS NOMBRECITADO,
                               (SELECT NVL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
                         FROM CITACION C
                         WHERE C.CODIGO = ${codCitacion}
@@ -153,6 +154,43 @@ export class CitacionController {
       return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
     }
   }
+
+  //listado filtrado de citaciones
+  @Get('/ListarCitacionesFillEstudiante/:idEstudiante')
+  async ListadoCitacionesFiltradoEstudiante(@Param('idEstudiante') idEstudiante: string, @Res() respuesta) {
+    try {
+      const consulta = `SELECT C.CODIGO, 
+                            C.DETALLE, 
+                            C.FECHAINICIO, 
+                            C.FECHAFIN, 
+                            C.USUARIOCITACION,
+                            (SELECT U.NOMBRES||' '||U.APELLIDOS FROM USUARIO U WHERE U.ID=C.USUARIOCITACION) AS NOMBRECITADO,
+                            (SELECT NVL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
+                      FROM CITACION C
+                      WHERE C.USUARIOCITACION = (SELECT A.IDACUDIENTE FROM ACUDIENTE A WHERE A.IDESTUDIANTE=${idEstudiante})
+                      ORDER BY C.CODIGO DESC`;
+      console.log(consulta); // Verificar la consulta generada
+      // Ejecutar la consulta y devolver la respuesta
+      const mensaje = await this.citacionService.ListadoCitacionesService(consulta);
+      return respuesta.status(HttpStatus.OK).json(mensaje);
+    } catch (error) {
+      console.error('Error listado citaciones:', error); // Log del error para más detalles
+
+      // Mensaje detallado de error
+      let mensajeError = 'Error listado citaciones.';
+      if (error.code === 'ORA-00001') {
+        mensajeError += ' Violación de clave única: listado citaciones ya existe.';
+      } else if (error.code === 'ORA-01400') {
+        mensajeError += ' No se pueden insertar valores nulos en las columnas obligatorias.';
+      } else if (error.code === 'ORA-00984') {
+        mensajeError += ' Error en la sintaxis de la consulta. Revisa los datos ingresados.';
+      } else {
+        mensajeError += ` Error inesperado: ${error.message || error}`;
+      }
+      return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
+    }
+  }
+
 
   //Crud
   @Post('/CrearCitacion')
