@@ -3,11 +3,99 @@ import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Controller('usuario')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) { }
 
+  //TOKENDS de usuarios
+  //Para consultar el token de un usuario en especifico
+  @Get('/ConsultaTokenUsuario/:idUsuario')
+  async ConsultaTokenUsuario(@Param('idUsuario') idUsuario: string, @Res() respuesta) {
+    try {
+      const consulta = `SELECT TOKEN FROM USUARIO WHERE ID=${idUsuario} `;
+      const mensaje = await this.usuarioService.consultaToken(consulta);
+      return respuesta.status(HttpStatus.OK).json(mensaje);
+    }
+    catch (error) {
+      console.error('Error en la creación del usuario:', error); // Log del error para más detalles
+      // Mensaje detallado de error
+      let mensajeError = 'Error en la creación del usuario.';
+      if (error.code === 'ORA-00001') {
+        mensajeError += ' Violación de clave única: el usuario ya existe.';
+      } else if (error.code === 'ORA-01400') {
+        mensajeError += ' No se pueden insertar valores nulos en las columnas obligatorias.';
+      } else if (error.code === 'ORA-00984') {
+        mensajeError += ' Error en la sintaxis de la consulta. Revisa los datos ingresados.';
+      } else {
+        mensajeError += ` Error inesperado: ${error.message || error}`;
+      }
+      return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
+    }
+  }
+
+  //Para consultar el token de todos los usuarios
+  @Get('/ConsultaToken')
+  async ConsultaToken(@Res() respuesta) {
+    try {
+      const consulta = `SELECT TOKEN FROM USUARIO WHERE TOKEN IS NOT NULL`;
+      const mensaje = await this.usuarioService.consultaToken(consulta);
+      return respuesta.status(HttpStatus.OK).json(mensaje);
+    }
+    catch (error) {
+      console.error('Error en la creación del usuario:', error); // Log del error para más detalles
+      // Mensaje detallado de error
+      let mensajeError = 'Error en la creación del usuario.';
+      if (error.code === 'ORA-00001') {
+        mensajeError += ' Violación de clave única: el usuario ya existe.';
+      } else if (error.code === 'ORA-01400') {
+        mensajeError += ' No se pueden insertar valores nulos en las columnas obligatorias.';
+      } else if (error.code === 'ORA-00984') {
+        mensajeError += ' Error en la sintaxis de la consulta. Revisa los datos ingresados.';
+      } else {
+        mensajeError += ` Error inesperado: ${error.message || error}`;
+      }
+      return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
+    }
+  }
+
+  @Patch('/actualizarTokenUsuario/:idUsuario/:token')
+  async actualizarTokenUsuario(
+    @Param('idUsuario') idUsuario: string, @Param('token') token: string,
+    @Res() respuesta
+  ) {
+    try {
+      // Construcción de la consulta como cadena
+      const queryEnvia = `
+        UPDATE USUARIO SET
+          TOKEN = '${token}' 
+        WHERE ID = ${idUsuario} `;
+
+      console.log(queryEnvia); // Verificar la consulta generada
+
+      // Ejecutar la consulta y devolver la respuesta
+      const mensaje = await this.usuarioService.ActualizarUsuario(queryEnvia);
+      return respuesta.status(HttpStatus.OK).json(mensaje);
+
+    } catch (error) {
+      console.error('Error en la actualización del usuario:', error); // Log del error para más detalles
+      // Mensaje detallado de error
+      let mensajeError = 'Error en la actualización del usuario.';
+      if (error.code === 'ORA-01400') {
+        mensajeError += ' No se pueden insertar valores nulos en las columnas obligatorias.';
+      } else if (error.code === 'ORA-00984') {
+        mensajeError += ' Error en la sintaxis de la consulta. Revisa los datos ingresados.';
+      } else if (error.code === 'ORA-02290') {
+        mensajeError += ' Violación de restricción de integridad. Verifica los valores de entrada.';
+      } else {
+        mensajeError += ` Error inesperado: ${error.message || error}`;
+      }
+      return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
+    }
+  }
+
+  //USUARIOS
   @Get()
   ListadoCompletoUsuarios() {
     return this.usuarioService.findAll();

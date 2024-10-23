@@ -20,7 +20,8 @@ import { CitacionController } from './citacion/citacion.controller';
 import { CitacionService } from './citacion/citacion.service';
 import { ObservadorController } from './observador/observador.controller';
 import { ObservadorService } from './observador/observador.service';
-
+import { ConfigModule } from '@nestjs/config';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -40,6 +41,9 @@ import { ObservadorService } from './observador/observador.service';
     TypeOrmModule.forFeature([Derecho]),
     TypeOrmModule.forFeature([Citacion]),
     TypeOrmModule.forFeature([Observador]),
+    //para fire base
+    ConfigModule.forRoot(),
+    NotificationModule
   ],
   controllers: [AppController, UsuarioController, EventoController, PqrController, DerechoController, CitacionController, ObservadorController],
   providers: [AppService, UsuarioService, EventoService, PqrService, DerechoService, CitacionService, ObservadorService],

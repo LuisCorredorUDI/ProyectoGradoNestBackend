@@ -234,7 +234,7 @@ export class PqrController {
   //CRUD
 
   @Post('/CrearPqr/')
-  async create(@Body() createPqrDto: CreatePqrDto, @Res() respuesta) {
+  async crearPqr(@Body() createPqrDto: CreatePqrDto, @Res() respuesta) {
     try {
       // Obtener el máximo código de PQR y sumarle 1
       const codigoNuevaPqr = (await this.pqrService.MaximoCodigoPqr()) + 1;
@@ -270,9 +270,8 @@ export class PqrController {
     }
   }
 
-  
   @Patch('/ActualizarRespuesta/:codigo/:referencia')
-  async updateRespuesta(@Param('codigo') CODIGO: string, @Param('referencia') NUMEROREFERENCIA: string, @Body() updatePqrDto: UpdatePqrDto, @Res() respuesta) {
+  async actualizarRespuesta(@Param('codigo') CODIGO: string, @Param('referencia') NUMEROREFERENCIA: string, @Body() updatePqrDto: UpdatePqrDto, @Res() respuesta) {
     try {
       // Generar la consulta SQL parametrizada
       const queryConsulta = `UPDATE PQR 
@@ -309,7 +308,7 @@ export class PqrController {
   }
 
   @Patch('/CancelarPqr/:codigo/:referencia')
-  async updateCancel(@Param('codigo') CODIGO: string, @Param('referencia') NUMEROREFERENCIA: string, @Body() updatePqrDto: UpdatePqrDto, @Res() respuesta) {
+  async cancelarPqr(@Param('codigo') CODIGO: string, @Param('referencia') NUMEROREFERENCIA: string, @Body() updatePqrDto: UpdatePqrDto, @Res() respuesta) {
     try {
       // Generar la consulta SQL parametrizada
       const queryConsulta = `UPDATE PQR 

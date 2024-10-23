@@ -13,6 +13,11 @@ export class UsuarioService {
     private readonly usuarioRepository: Repository<Usuario>
   ) { }
 
+  //Metodo para obtener tokends de usuarios
+  async consultaToken(consulta: string) {
+    return this.usuarioRepository.query(consulta);
+  }
+
   //funcion para buscar el ID maximo para crear un usuario
   async MaximoIdUsuario(): Promise<number> {
     const resultado = await this.usuarioRepository.query('SELECT NVL(MAX(ID),0) AS NUEVO FROM USUARIO');

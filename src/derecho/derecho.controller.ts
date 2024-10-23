@@ -14,7 +14,7 @@ export class DerechoController {
   }
 
   @Get(':tipoUsuario')
-  async findOne(@Param('tipoUsuario') tipoUsuario: string, @Res() respuesta) {
+  async listadoDerechos(@Param('tipoUsuario') tipoUsuario: string, @Res() respuesta) {
     try {
       // Generar la consulta parametrizada
       const queryConsultaTipoUsuario = `SELECT * FROM DERECHO WHERE TIPOUSUARIO = :tipoUsuario ORDER BY 1 ASC`;

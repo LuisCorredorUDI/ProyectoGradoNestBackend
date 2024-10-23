@@ -191,10 +191,9 @@ export class CitacionController {
     }
   }
 
-
   //Crud
   @Post('/CrearCitacion')
-  async create(@Body() createCitacionDto: CreateCitacionDto, @Res() respuesta) {
+  async crearCitacion(@Body() createCitacionDto: CreateCitacionDto, @Res() respuesta) {
     try {
       const idCitacionMax = (await this.citacionService.MaximoCodigoCitacion()) + 1;
       const consulta = ` INSERT INTO CITACION (CODIGO,DETALLE,FECHAINICIO,FECHAFIN,USUARIOCITACION)
@@ -256,7 +255,7 @@ export class CitacionController {
   }
 
   @Delete('EliminarCitacion/:id')
-  async remove(@Param('id') id: string, @Res() respuesta) {
+  async eliminarCitacion(@Param('id') id: string, @Res() respuesta) {
     try {
       //Ejecutamos el proceso almacenado en Bd - Creado para este caso en especial.
       const consulta1 = `BEGIN

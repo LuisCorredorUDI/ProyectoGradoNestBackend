@@ -19,7 +19,7 @@ export class ObservadorController {
 
   //crud
   @Post('/CrearObservador')
-  async create(@Body() createObservadorDto: CreateObservadorDto, @Res() respuesta) {
+  async crearObservador(@Body() createObservadorDto: CreateObservadorDto, @Res() respuesta) {
     try {
       const idObservadorMax = (await this.observadorService.MaximoCodigoObservador()) + 1;
       const consulta = `INSERT INTO OBSERVADOR (CODIGO,TITULO,DETALLE,USUARIOOBSERVACION)
@@ -51,7 +51,7 @@ export class ObservadorController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  eliminarObservador(@Param('id') id: string) {
     return this.observadorService.remove(+id);
   }
 
