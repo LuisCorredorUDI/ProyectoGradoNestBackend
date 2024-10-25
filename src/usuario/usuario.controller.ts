@@ -9,6 +9,12 @@ import { NotificationService } from 'src/notification/notification.service';
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) { }
 
+  //controla el inicio de sesion de los usuarios
+  @Get(':documento/:clave')
+  LoginUsuario(@Param('documento') documento: string, @Param('clave') clave: string,) {
+    return this.usuarioService.LoginUsuario(documento, clave);
+  }
+
   //TOKENDS de usuarios
   //Para consultar el token de un usuario en especifico
   @Get('/ConsultaTokenUsuario/:idUsuario')
@@ -167,12 +173,6 @@ export class UsuarioController {
   @Get('/DetalleUsuario/:id')
   findOne(@Param('id') id: number) {
     return this.usuarioService.findOne(id);
-  }
-
-  //controla el inicio de sesion de los usuarios
-  @Get(':documento/:clave')
-  LoginUsuario(@Param('documento') documento: string, @Param('clave') clave: string,) {
-    return this.usuarioService.LoginUsuario(documento, clave);
   }
 
   //Crud
