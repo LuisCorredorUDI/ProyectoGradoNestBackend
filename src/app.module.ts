@@ -26,14 +26,14 @@ import { NotificationModule } from './notification/notification.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'oracle',
-      host: 'localhost',             // Dirección del servidor Oracle
-      port: 1521,                    // Puerto por defecto de Oracle
-      username: 'PROYECTOGRADO',     // Usuario de la base de datos
-      password: 'Bucaramanga2024',     // Contraseña del usuario
-      sid: 'xe',               // SID de la base de datos Oracle (por ejemplo, ORCL)
-      entities: [__dirname + '/**/*.entity{.ts,.js}'], // Entidades
-      synchronize: false,             // No recomendado en producción, genera automáticamente las tablas
+      type: 'mysql',                                  // Cambiado a 'mysql'
+      host: 'db-api.ct2was4kc71n.us-east-2.rds.amazonaws.com', // Host de MySQL
+      port: 3306,                                     // Puerto para MySQL
+      username: 'admin',                              // Usuario de la base de datos
+      password: 'LuchoUDI2024',                       // Contraseña del usuario
+      database: 'PROYECTOGRADO',                          // Aquí debes poner el nombre de tu base de datos MySQL
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],// Las entidades
+      synchronize: false,                             // No habilitar en producción (genera automáticamente tablas)
     }),
     TypeOrmModule.forFeature([Usuario]),
     TypeOrmModule.forFeature([Evento]),
@@ -41,11 +41,28 @@ import { NotificationModule } from './notification/notification.module';
     TypeOrmModule.forFeature([Derecho]),
     TypeOrmModule.forFeature([Citacion]),
     TypeOrmModule.forFeature([Observador]),
-    //para fire base
+    // para fire base
     ConfigModule.forRoot(),
     NotificationModule
   ],
-  controllers: [AppController, UsuarioController, EventoController, PqrController, DerechoController, CitacionController, ObservadorController],
-  providers: [AppService, UsuarioService, EventoService, PqrService, DerechoService, CitacionService, ObservadorService],
+  controllers: [
+    AppController,
+    UsuarioController,
+    EventoController,
+    PqrController,
+    DerechoController,
+    CitacionController,
+    ObservadorController,
+  ],
+  providers: [
+    AppService,
+    UsuarioService,
+    EventoService,
+    PqrService,
+    DerechoService,
+    CitacionService,
+    ObservadorService,
+  ],
 })
 export class AppModule {}
+
