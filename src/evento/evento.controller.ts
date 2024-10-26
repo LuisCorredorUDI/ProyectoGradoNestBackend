@@ -17,7 +17,7 @@ export class EventoController {
   async listadoEventosHomeControlador(@Res() respuesta) {
     const consulta = `SELECT CODIGO, NOMBRE, DETALLE, FECHAINICIO, FECHAFIN, IDUSUARIOCREACION, RUTAIMAGEN
                       FROM EVENTO 
-                      WHERE FECHAINICIO > SYSDATE AND FECHAFIN > SYSDATE 
+                      WHERE FECHAINICIO > NOW() AND FECHAFIN > NOW() 
                       ORDER BY FECHAINICIO ASC`;
 
     const eventos = await this.eventoService.listadoEventosHomeService(consulta);
@@ -33,7 +33,8 @@ export class EventoController {
       if (rutaImagen && fs.existsSync(rutaImagen)) {
         imagenPath = rutaImagen; // Si la imagen existe, usamos esa
       }
-
+      //Asignar la truta por defecto
+      evento.RUTAIMAGEN = imagenPath;
       // Leemos la imagen y la convertimos en base64 para incluirla en el JSON
       const imagenBuffer = fs.readFileSync(imagenPath);
       const imagenBase64 = imagenBuffer.toString('base64');
@@ -61,8 +62,8 @@ export class EventoController {
   @Post('/CrearEvento')
   async create(@Body() createEventoDto: CreateEventoDto, @Res() respuesta) {
     try {
-      const idMaximo = await this.eventoService.MaximoIdEvento() + 1;
-
+      const idMaximo = await this.eventoService.MaximoIdEvento();
+      console.log('maximo id:'+idMaximo);
       let rutaImagen = null;
       if (createEventoDto.IMAGEN) {
         // Generar la ruta para guardar la imagen
@@ -71,14 +72,16 @@ export class EventoController {
         // Decodificar la imagen de base64 y guardarla en la carpeta "rutatemporal"
         const imagenBuffer = Buffer.from(createEventoDto.IMAGEN, 'base64');
         fs.writeFileSync(rutaImagen, imagenBuffer);
+        //ajustar directorio para insercion
+        rutaImagen=rutaImagen.replace(/\\/g, '\\\\');
       }
 
       // Armamos consulta con todos los campos necesarios
       const queryEnvia =
         ` INSERT INTO EVENTO (CODIGO, NOMBRE, DETALLE, FECHAINICIO, FECHAFIN, RUTAIMAGEN, IDUSUARIOCREACION)
         VALUES (${idMaximo}, '${createEventoDto.NOMBRE}', '${createEventoDto.DETALLE}', 
-        TO_DATE('${createEventoDto.FECHAINICIO}', 'YYYY/MM/DD HH24:MI'), 
-        TO_DATE('${createEventoDto.FECHAFIN}', 'YYYY/MM/DD HH24:MI'), 
+        '${createEventoDto.FECHAINICIO}', 
+        '${createEventoDto.FECHAFIN}', 
         '${rutaImagen}', ${createEventoDto.IDUSUARIOCREACION}) `;
 
       console.log(queryEnvia);

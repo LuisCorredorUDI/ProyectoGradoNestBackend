@@ -15,7 +15,7 @@ export class EventoService {
 
   //funcion para buscar el ID maximo para crear un usuario
   async MaximoIdEvento(): Promise<number>{
-    const resultado = await this.eventoRepository.query('SELECT NVL(MAX(CODIGO),0) AS NUEVO FROM EVENTO');
+    const resultado = await this.eventoRepository.query('SELECT IFNULL(MAX(CODIGO), 0)+1 AS NUEVO FROM EVENTO');
     return resultado[0]?.NUEVO || 0;
   }
 

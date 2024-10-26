@@ -58,7 +58,7 @@ export class CitacionController {
                               C.FECHAFIN, 
                               C.USUARIOCITACION,
                               (SELECT U.NOMBRES||' '||U.APELLIDOS FROM USUARIO U WHERE U.ID = C.USUARIOCITACION) AS NOMBRECITADO,
-                              (SELECT NVL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
+                              (SELECT IFNULL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
                         FROM CITACION C
                         WHERE C.CODIGO = ${codCitacion}
                         ORDER BY C.CODIGO DESC`;
@@ -89,14 +89,18 @@ export class CitacionController {
   async ListadoCitaciones(@Res() respuesta) {
     try {
       const consulta = `SELECT C.CODIGO, 
-                            C.DETALLE, 
-                            C.FECHAINICIO, 
-                            C.FECHAFIN, 
-                            C.USUARIOCITACION,
-                            (SELECT U.NOMBRES||' '||U.APELLIDOS FROM USUARIO U WHERE U.ID=C.USUARIOCITACION) AS NOMBRECITADO,
-                            (SELECT NVL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
-                      FROM CITACION C
-                      ORDER BY CODIGO DESC`;
+                              C.DETALLE,
+                              C.FECHAINICIO,
+                              C.FECHAFIN,
+                              C.USUARIOCITACION,
+                              (SELECT CONCAT(U.NOMBRES, ' ', U.APELLIDOS) 
+                        FROM USUARIO U 
+                        WHERE U.ID = C.USUARIOCITACION) AS NOMBRECITADO,
+                              (SELECT IFNULL(COUNT(CO.CODIGOCITACION), 0) 
+                                FROM CITACION_OBSERVADOR CO 
+                                WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
+                        FROM CITACION C
+                        ORDER BY C.CODIGO DESC`;
       console.log(consulta); // Verificar la consulta generada
       // Ejecutar la consulta y devolver la respuesta
       const mensaje = await this.citacionService.ListadoCitacionesService(consulta);
@@ -129,7 +133,7 @@ export class CitacionController {
                             C.FECHAFIN, 
                             C.USUARIOCITACION,
                             (SELECT U.NOMBRES||' '||U.APELLIDOS FROM USUARIO U WHERE U.ID=C.USUARIOCITACION) AS NOMBRECITADO,
-                            (SELECT NVL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
+                            (SELECT IFNULL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
                       FROM CITACION C
                       WHERE USUARIOCITACION = ${idAcudiente}
                       ORDER BY CODIGO DESC`;
@@ -165,7 +169,7 @@ export class CitacionController {
                             C.FECHAFIN, 
                             C.USUARIOCITACION,
                             (SELECT U.NOMBRES||' '||U.APELLIDOS FROM USUARIO U WHERE U.ID=C.USUARIOCITACION) AS NOMBRECITADO,
-                            (SELECT NVL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
+                            (SELECT IFNULL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
                       FROM CITACION C
                       WHERE C.USUARIOCITACION = (SELECT A.IDACUDIENTE FROM ACUDIENTE A WHERE A.IDESTUDIANTE=${idEstudiante})
                       ORDER BY C.CODIGO DESC`;
@@ -195,12 +199,12 @@ export class CitacionController {
   @Post('/CrearCitacion')
   async crearCitacion(@Body() createCitacionDto: CreateCitacionDto, @Res() respuesta) {
     try {
-      const idCitacionMax = (await this.citacionService.MaximoCodigoCitacion()) + 1;
+      const idCitacionMax = (await this.citacionService.MaximoCodigoCitacion());
       const consulta = ` INSERT INTO CITACION (CODIGO,DETALLE,FECHAINICIO,FECHAFIN,USUARIOCITACION)
                        VALUES (${idCitacionMax},
                               '${createCitacionDto.DETALLE}',
-                              TO_DATE('${createCitacionDto.FECHAINICIO}','YYYY/MM/DD HH24:MI'),
-                              TO_DATE('${createCitacionDto.FECHAFIN}','YYYY/MM/DD HH24:MI'),
+                              '${createCitacionDto.FECHAINICIO}',
+                              '${createCitacionDto.FECHAFIN}',
                               ${createCitacionDto.USUARIOCITACION})`;
 
       console.log(consulta); // Verificar la consulta generada
@@ -228,7 +232,7 @@ export class CitacionController {
   @Post('/Intermedia')
   async registroIntermedia(@Res() respuesta) {
     try {
-      const idCitObsMax = (await this.citacionService.MaximoIntermedia()) + 1;
+      const idCitObsMax = (await this.citacionService.MaximoIntermedia());
       const consulta = ` INSERT INTO CITACION_OBSERVADOR (CODIGOCITACIONOBSERVADOR,CODIGOCITACION,CODIGOOBSERVADOR)
                        VALUES (${idCitObsMax},(SELECT MAX(CODIGO) FROM CITACION),(SELECT MAX(CODIGO) FROM OBSERVADOR))`;
 
@@ -258,15 +262,40 @@ export class CitacionController {
   async eliminarCitacion(@Param('id') id: string, @Res() respuesta) {
     try {
       //Ejecutamos el proceso almacenado en Bd - Creado para este caso en especial.
-      const consulta1 = `BEGIN
-                              PR_ELIMINA_CITACION(${id});
-                          END;`;
+      const consulta1 = `CALL PR_ELIMINA_CITACION(${id})`;
       console.log(consulta1); // Verificar la consulta generada
       // Ejecutar la consulta y devolver la respuesta
       const mensaje1 = await this.citacionService.EliminarCitacionService(consulta1);
       return respuesta.status(HttpStatus.OK).json(mensaje1);
     } catch (error) {
-      console.error('Error en la creación de Citacion:', error); // Log del error para más detalles
+      console.error('Error en la ELIMINACION de Citacion:', error); // Log del error para más detalles
+
+      // Mensaje detallado de error
+      let mensajeError = 'Error en la creación de Citacion.';
+      if (error.code === 'ORA-00001') {
+        mensajeError += ' Violación de clave única: Citacion ya existe.';
+      } else if (error.code === 'ORA-01400') {
+        mensajeError += ' No se pueden insertar valores nulos en las columnas obligatorias.';
+      } else if (error.code === 'ORA-00984') {
+        mensajeError += ' Error en la sintaxis de la consulta. Revisa los datos ingresados.';
+      } else {
+        mensajeError += ` Error inesperado: ${error.message || error}`;
+      }
+      return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
+    }
+  }
+
+  @Delete('eliminarCitacionSinObs/:id')
+  async eliminarCitacionSinObs(@Param('id') id: string, @Res() respuesta) {
+    try {
+      //Ejecutamos el proceso almacenado en Bd - Creado para este caso en especial.
+      const consulta1 = `DELETE FROM CITACION WHERE CODIGO=${id}`;
+      console.log(consulta1); // Verificar la consulta generada
+      // Ejecutar la consulta y devolver la respuesta
+      const mensaje1 = await this.citacionService.EliminarCitacionService(consulta1);
+      return respuesta.status(HttpStatus.OK).json(mensaje1);
+    } catch (error) {
+      console.error('Error en la ELIMINACION de Citacion:', error); // Log del error para más detalles
 
       // Mensaje detallado de error
       let mensajeError = 'Error en la creación de Citacion.';

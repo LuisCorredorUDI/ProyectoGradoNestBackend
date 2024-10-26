@@ -3,7 +3,7 @@ import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
-import { NotificationService } from 'src/notification/notification.service';
+
 
 @Controller('usuario')
 export class UsuarioController {
@@ -17,7 +17,7 @@ export class UsuarioController {
 
   //TOKENDS de usuarios
   //Para consultar el token de un usuario en especifico
-  @Get('/ConsultaTokenUsuario/:idUsuario')
+  @Get('/ConsultaToken/Usuario/:idUsuario')
   async ConsultaTokenUsuario(@Param('idUsuario') idUsuario: string, @Res() respuesta) {
     try {
       const consulta = `SELECT TOKEN FROM USUARIO WHERE ID=${idUsuario} `;
@@ -107,7 +107,7 @@ export class UsuarioController {
     return this.usuarioService.findAll();
   }
 
-  @Get('/ListadoPorVincular')
+  @Get('/ListadoPorVincular/')
   async ListadoPorVincularController(@Res() respuesta) {
     try {
       const queryEnvia = `SELECT U.* 
@@ -136,7 +136,7 @@ export class UsuarioController {
     }
   }
 
-  @Get('/ListadoVinculados/:idacudiente')
+  @Get('/ListadoVinculados/Acudiente/:idacudiente')
   async ListadoVinculadosController(@Param('idacudiente') idacudiente: string, @Res() respuesta) {
     try {
       const queryEnvia = `SELECT U.* 
@@ -170,16 +170,16 @@ export class UsuarioController {
     }
   }
 
-  @Get('/DetalleUsuario/:id')
-  findOne(@Param('id') id: number) {
-    return this.usuarioService.findOne(id);
+  @Get('/DetalleUsuarioCoor/usuariodetalle/:id')
+  async DetalleUsuarioController(@Param('id') id: number) {
+    return await this.usuarioService.DetalleUsuarioService(id);
   }
 
   //Crud
   @Post('/CrearAcudiente/:idacudiente/:idestudiante')
   async CrearAcudiente(@Param('idacudiente') idacudiente: string, @Param('idestudiante') idestudiante: string, @Res() respuesta) {
     try {
-      const idMaximo = (await this.usuarioService.MaximoIdAcudiente()) + 1;
+      const idMaximo = (await this.usuarioService.MaximoIdAcudiente());
       // Construcción de la consulta como cadena
       const queryEnvia = `INSERT INTO ACUDIENTE(ID,IDESTUDIANTE,IDACUDIENTE) VALUES(${idMaximo}, ${idestudiante}, ${idacudiente})`;
       console.log(queryEnvia); // Verificar la consulta generada
@@ -208,12 +208,12 @@ export class UsuarioController {
   @Post('/CrearUsuario')
   async CrearUsuario(@Body() createUsuarioDto: CreateUsuarioDto, @Res() respuesta) {
     try {
-      const idMaximo = (await this.usuarioService.MaximoIdUsuario()) + 1;
+      const idMaximo = (await this.usuarioService.MaximoIdUsuario())
 
       // Validación de FECHANACIMIENTO
       let fechaTexto = "NULL"; // Valor predeterminado para nulo
       if (createUsuarioDto.FECHANACIMIENTO) {
-        fechaTexto = `TO_DATE('${createUsuarioDto.FECHANACIMIENTO}', 'YYYY-MM-DD')`;
+        fechaTexto = `'${createUsuarioDto.FECHANACIMIENTO}'`;
       }
 
       // Validación de campos que pueden ser nulos
@@ -269,7 +269,7 @@ export class UsuarioController {
       // Validación de FECHANACIMIENTO
       let fechaTexto = "NULL"; // Valor predeterminado para nulo
       if (updateUsuarioDto.FECHANACIMIENTO) {
-        fechaTexto = `TO_DATE('${updateUsuarioDto.FECHANACIMIENTO}', 'YYYY-MM-DD')`;
+        fechaTexto = `'${updateUsuarioDto.FECHANACIMIENTO}'`;
       }
 
       // Validación de campos que pueden ser nulos

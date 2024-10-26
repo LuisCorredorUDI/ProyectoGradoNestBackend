@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { Repository } from 'typeorm';
+
 
 @Injectable()
 export class UsuarioService {
@@ -20,13 +19,13 @@ export class UsuarioService {
 
   //funcion para buscar el ID maximo para crear un usuario
   async MaximoIdUsuario(): Promise<number> {
-    const resultado = await this.usuarioRepository.query('SELECT NVL(MAX(ID),0) AS NUEVO FROM USUARIO');
+    const resultado = await this.usuarioRepository.query('SELECT IFNULL(MAX(ID), 0)+1 AS NUEVO FROM USUARIO');
     return resultado[0]?.NUEVO || 0;
   }
 
   //funcion para buscar el ID maximo para crear un acudiente
   async MaximoIdAcudiente(): Promise<number> {
-    const resultado = await this.usuarioRepository.query('SELECT NVL(MAX(ID),0) AS NUEVO FROM ACUDIENTE');
+    const resultado = await this.usuarioRepository.query('SELECT IFNULL(MAX(ID),0)+1 AS NUEVO FROM ACUDIENTE');
     return resultado[0]?.NUEVO || 0;
   }
 
@@ -42,11 +41,12 @@ export class UsuarioService {
     return await this.usuarioRepository.find({order:{NOMBRES: 'ASC'}});
   }
 
-  async findOne(id: number) {
+  async DetalleUsuarioService(id: number) {
     try {
       // Si el ID existe, buscar el usuario completo usando findOne
-      const usuario = await this.usuarioRepository.findOne({ where: { ID: id } });
-
+      const query = 'SELECT * FROM USUARIO WHERE ID='+id;
+      console.log(query);
+      const usuario = await this.usuarioRepository.query(query);
       // Verificar si el usuario fue encontrado y retornarlo completo
       if (usuario) {
         return usuario; // Retorna el objeto completo del usuario encontrado
@@ -61,7 +61,7 @@ export class UsuarioService {
 
   async LoginUsuario(documento: string, clave: string): Promise<any> {
     // Consulta para verificar si existe el usuario y obtener su ID
-    const queryText = 'SELECT ID FROM USUARIO WHERE DOCUMENTO = :documento AND CLAVEINGRESO = :clave AND ESTADO=1 ';
+    const queryText = 'SELECT ID FROM USUARIO WHERE DOCUMENTO = ? AND CLAVEINGRESO = ? AND ESTADO=1 ';
     try {
       // Ejecutar la consulta personalizada con parámetros para evitar SQL Injection
       const resultado = await this.usuarioRepository.query(queryText, [documento, clave]);

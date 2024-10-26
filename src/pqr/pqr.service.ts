@@ -15,15 +15,15 @@ export class PqrService {
 
   //funcion para buscar el ID maximo para crear un usuario
   async MaximoCodigoPqr(): Promise<number> {
-    const resultado = await this.pqrRepository.query('SELECT NVL(MAX(CODIGO),0) AS NUEVO FROM PQR');
+    const resultado = await this.pqrRepository.query('SELECT IFNULL(MAX(CODIGO),0)+1 AS NUEVO FROM PQR');
     return resultado[0]?.NUEVO || 0;
   }
 
   //Listado pqr por usuario especifico
-  async BusquedaPqrPorUsuario(queryConsulta: string, parametros: any) {
+  async BusquedaPqrPorUsuario(queryConsulta: string) {
     try {
       // Ejecutar la consulta con los parámetros para evitar inyección SQL
-      const pqrList = await this.pqrRepository.query(queryConsulta, parametros);
+      const pqrList = await this.pqrRepository.query(queryConsulta);
       return pqrList;
     } catch (error) {
       console.error('Error al ejecutar la consulta de PQR por usuario:', error); // Log del error
@@ -49,10 +49,10 @@ export class PqrService {
 
   //DETALLE
   //DETALLE pqr por coordinador
-  async BusquedaDetalleService(queryConsulta: string, parametros: any) {
+  async BusquedaDetalleService(queryConsulta: string) {
     try {
       // Ejecutar la consulta con los parámetros para evitar inyección SQL
-      const pqrDetalle = await this.pqrRepository.query(queryConsulta, parametros);
+      const pqrDetalle = await this.pqrRepository.query(queryConsulta);
       return pqrDetalle;
     } catch (error) {
       console.error('Error al ejecutar la consulta de PQR por usuario:', error); // Log del error
@@ -73,29 +73,25 @@ export class PqrService {
     }
   }
 
-  async updateRespuestaService(queryConsulta: string, parametros: any) {
+  async updateRespuestaService(queryConsulta: string) {
     try {
       // Usa el método `query` de TypeORM con la consulta y los parámetros
-      return await this.pqrRepository.query(queryConsulta, parametros);
+      return await this.pqrRepository.query(queryConsulta);
     } catch (error) {
       // Manejo de errores si falla la ejecución de la consulta
       throw new InternalServerErrorException('Error ejecutando la consulta SQL', error.message);
     }
   }
 
-  async updateCancelService(queryConsulta: string, parametros: any) {
+  async updateCancelService(queryConsulta: string) {
     try {
       // Usa el método `query` de TypeORM con la consulta y los parámetros
-      return await this.pqrRepository.query(queryConsulta, parametros);
+      return await this.pqrRepository.query(queryConsulta);
     } catch (error) {
       // Manejo de errores si falla la ejecución de la consulta
       throw new InternalServerErrorException('Error ejecutando la consulta SQL', error.message);
     }
   }
 
-  /*
-  remove(id: number) {
-    return `This action removes a #${id} pqr`;
-  }*/
 
 }

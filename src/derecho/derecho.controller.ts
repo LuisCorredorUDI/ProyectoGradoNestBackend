@@ -17,9 +17,11 @@ export class DerechoController {
   async listadoDerechos(@Param('tipoUsuario') tipoUsuario: string, @Res() respuesta) {
     try {
       // Generar la consulta parametrizada
-      const queryConsultaTipoUsuario = `SELECT * FROM DERECHO WHERE TIPOUSUARIO = :tipoUsuario ORDER BY 1 ASC`;
+      const queryConsultaTipoUsuario = `SELECT * FROM DERECHO ORDER BY 2 ASC`;
+      //const queryConsultaTipoUsuario = `SELECT * FROM DERECHO WHERE TIPOUSUARIO = ${tipoUsuario} ORDER BY 1 ASC`;
+      console.log(queryConsultaTipoUsuario);
       // Ejecutar la consulta en el servicio
-      const derechos = await this.derechoService.BuscarPorTipo(queryConsultaTipoUsuario, { tipoUsuario });
+      const derechos = await this.derechoService.BuscarPorTipo(queryConsultaTipoUsuario);
       // Responder con los derechos encontrados
       return respuesta.status(HttpStatus.OK).json(derechos);
     } catch (error) {
@@ -31,22 +33,5 @@ export class DerechoController {
     }
   }
 
-
-  /*
-  //crud
-  @Post()
-  create(@Body() createDerechoDto: CreateDerechoDto) {
-    return this.derechoService.create(createDerechoDto);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDerechoDto: UpdateDerechoDto) {
-    return this.derechoService.update(+id, updateDerechoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.derechoService.remove(+id);
-  }*/
 
 }

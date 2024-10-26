@@ -20,10 +20,10 @@ export class PqrController {
            WHEN 3 THEN 'Media'
            WHEN 4 THEN 'Baja'
            ELSE 'Desconocido'
-       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR = 0 AND USUARIOGENERA = :id ORDER BY NUMEROREFERENCIA ASC`;
+       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR = 0 AND USUARIOGENERA = ${id} ORDER BY NUMEROREFERENCIA ASC`;
 
       // Llamar al servicio con la consulta y los parámetros
-      const pqrList = await this.pqrService.BusquedaPqrPorUsuario(queryEnvia, { id });
+      const pqrList = await this.pqrService.BusquedaPqrPorUsuario(queryEnvia);
 
       // Responder con la lista de PQR en formato JSON
       return respuesta.status(HttpStatus.OK).json(pqrList);
@@ -50,10 +50,10 @@ export class PqrController {
            WHEN 3 THEN 'Media'
            WHEN 4 THEN 'Baja'
            ELSE 'Desconocido'
-       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR != 0 AND USUARIOGENERA = :id ORDER BY NUMEROREFERENCIA ASC`;
+       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR != 0 AND USUARIOGENERA = ${id} ORDER BY NUMEROREFERENCIA ASC`;
 
       // Llamar al servicio con la consulta y los parámetros
-      const pqrList = await this.pqrService.BusquedaPqrPorUsuario(queryEnvia, { id });
+      const pqrList = await this.pqrService.BusquedaPqrPorUsuario(queryEnvia);
 
       // Responder con la lista de PQR en formato JSON
       return respuesta.status(HttpStatus.OK).json(pqrList);
@@ -80,10 +80,10 @@ export class PqrController {
            WHEN 3 THEN 'Media'
            WHEN 4 THEN 'Baja'
            ELSE 'Desconocido'
-       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE USUARIOGENERA = :id ORDER BY NUMEROREFERENCIA ASC`;
+       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE USUARIOGENERA = ${id} ORDER BY NUMEROREFERENCIA ASC`;
 
       // Llamar al servicio con la consulta y los parámetros
-      const pqrList = await this.pqrService.BusquedaPqrPorUsuario(queryEnvia, { id });
+      const pqrList = await this.pqrService.BusquedaPqrPorUsuario(queryEnvia);
 
       // Responder con la lista de PQR en formato JSON
       return respuesta.status(HttpStatus.OK).json(pqrList);
@@ -213,10 +213,10 @@ export class PqrController {
                                   WHEN 4 THEN 'Baja'
                                   ELSE 'Desconocido'
                               END AS NOMBRE_GRAVEDADTIPOPQR
-                        FROM PQR WHERE CODIGO=:CODIGO AND NUMEROREFERENCIA=:NUMEROREFERENCIA `;
+                        FROM PQR WHERE CODIGO=${CODIGO} AND NUMEROREFERENCIA=${NUMEROREFERENCIA} `;
 
       // Llamar al servicio con la consulta y los parámetros
-      const pqrList = await this.pqrService.BusquedaDetalleService(queryEnvia,{CODIGO,NUMEROREFERENCIA});
+      const pqrList = await this.pqrService.BusquedaDetalleService(queryEnvia);
 
       // Responder con la lista de PQR en formato JSON
       return respuesta.status(HttpStatus.OK).json(pqrList);
@@ -237,11 +237,13 @@ export class PqrController {
   async crearPqr(@Body() createPqrDto: CreatePqrDto, @Res() respuesta) {
     try {
       // Obtener el máximo código de PQR y sumarle 1
-      const codigoNuevaPqr = (await this.pqrService.MaximoCodigoPqr()) + 1;
+      const codigoNuevaPqr = (await this.pqrService.MaximoCodigoPqr());
+      let referenciaNum = 0;
+      referenciaNum = Number(codigoNuevaPqr) + 1000;
 
       // Generar la consulta SQL parametrizada
       const queryConsulta = `INSERT INTO PQR (CODIGO, DETALLE, TIPOPQR, USUARIOGENERA, CODIGODERECHO, NUMEROREFERENCIA) 
-      VALUES (${codigoNuevaPqr}, '${createPqrDto.DETALLE}', ${createPqrDto.TIPOPQR}, ${createPqrDto.USUARIOGENERA}, ${createPqrDto.CODIGODERECHO}, ${codigoNuevaPqr + 1000})`;
+      VALUES (${codigoNuevaPqr}, '${createPqrDto.DETALLE}', ${createPqrDto.TIPOPQR}, ${createPqrDto.USUARIOGENERA}, ${createPqrDto.CODIGODERECHO}, ${referenciaNum})`;
 
       console.log(queryConsulta); // Verificar la consulta generada
 
@@ -276,14 +278,14 @@ export class PqrController {
       // Generar la consulta SQL parametrizada
       const queryConsulta = `UPDATE PQR 
                             SET RESPUESTA='${updatePqrDto.RESPUESTA}', 
-                                FECHARESPUESTA = SYSDATE,
+                                FECHARESPUESTA = NOW(),
                                 ESTADOPQR = 1 
-                            WHERE CODIGO=:CODIGO AND NUMEROREFERENCIA=:NUMEROREFERENCIA`;
+                            WHERE CODIGO=${CODIGO} AND NUMEROREFERENCIA=${NUMEROREFERENCIA}`;
 
       console.log(queryConsulta); // Verificar la consulta generada
 
       // Ejecutar la consulta y devolver la respuesta
-      const mensaje = await this.pqrService.updateRespuestaService(queryConsulta,{CODIGO,NUMEROREFERENCIA});
+      const mensaje = await this.pqrService.updateRespuestaService(queryConsulta);
       return respuesta.status(HttpStatus.OK).json({ message: 'Respuesta actualizada exitosamente.', data: mensaje });
     } catch (error) {
       console.error('Error en la Actualizacion de la PQR:', error); // Log del error para más detalles
@@ -313,14 +315,14 @@ export class PqrController {
       // Generar la consulta SQL parametrizada
       const queryConsulta = `UPDATE PQR 
                             SET RESPUESTA='Cancelada por el usuario', 
-                                FECHARESPUESTA = SYSDATE,
+                                FECHARESPUESTA = NOW(),
                                 ESTADOPQR = 2 
-                            WHERE CODIGO=:CODIGO AND NUMEROREFERENCIA=:NUMEROREFERENCIA`;
+                            WHERE CODIGO=${CODIGO} AND NUMEROREFERENCIA=${NUMEROREFERENCIA}`;
 
       console.log(queryConsulta); // Verificar la consulta generada
 
       // Ejecutar la consulta y devolver la respuesta
-      const mensaje = await this.pqrService.updateCancelService(queryConsulta,{CODIGO,NUMEROREFERENCIA});
+      const mensaje = await this.pqrService.updateCancelService(queryConsulta);
       return respuesta.status(HttpStatus.OK).json({ message: 'Respuesta actualizada exitosamente.', data: mensaje });
     } catch (error) {
       console.error('Error en la Actualizacion de la PQR:', error); // Log del error para más detalles

@@ -15,27 +15,11 @@ export class ObservadorService {
 
     //funcion para buscar el ID maximo para crear un usuario
     async MaximoCodigoObservador(): Promise<number> {
-      const resultado = await this.observadorRepository.query('SELECT NVL(MAX(CODIGO),0) AS NUEVO FROM OBSERVADOR');
+      const resultado = await this.observadorRepository.query('SELECT IFNULL(MAX(CODIGO),0)+1 AS NUEVO FROM OBSERVADOR');
       return resultado[0]?.NUEVO || 0;
     }
 
-  findAll() {
-    return `This action returns all observador`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} observador`;
-  }
-
   CrearObservacion(consulta: string) {
     return this.observadorRepository.query(consulta);
-  }
-
-  update(id: number, updateObservadorDto: UpdateObservadorDto) {
-    return `This action updates a #${id} observador`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} observador`;
   }
 }

@@ -7,21 +7,11 @@ import { UpdateObservadorDto } from './dto/update-observador.dto';
 export class ObservadorController {
   constructor(private readonly observadorService: ObservadorService) { }
 
-  @Get()
-  findAll() {
-    return this.observadorService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.observadorService.findOne(+id);
-  }
-
   //crud
   @Post('/CrearObservador')
   async crearObservador(@Body() createObservadorDto: CreateObservadorDto, @Res() respuesta) {
     try {
-      const idObservadorMax = (await this.observadorService.MaximoCodigoObservador()) + 1;
+      const idObservadorMax = (await this.observadorService.MaximoCodigoObservador());
       const consulta = `INSERT INTO OBSERVADOR (CODIGO,TITULO,DETALLE,USUARIOOBSERVACION)
                         VALUES(${idObservadorMax},
                                '${createObservadorDto.TITULO}',
@@ -48,11 +38,6 @@ export class ObservadorController {
 
       return respuesta.status(HttpStatus.INTERNAL_SERVER_ERROR).json(mensajeError);
     }
-  }
-
-  @Delete(':id')
-  eliminarObservador(@Param('id') id: string) {
-    return this.observadorService.remove(+id);
   }
 
 

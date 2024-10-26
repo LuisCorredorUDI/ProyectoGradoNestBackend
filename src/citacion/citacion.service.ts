@@ -14,13 +14,13 @@ export class CitacionService {
 
     //funcion para buscar el ID maximo para crear un usuario
     async MaximoCodigoCitacion(): Promise<number> {
-      const resultado = await this.citacionRepository.query('SELECT NVL(MAX(CODIGO),0) AS NUEVO FROM CITACION');
+      const resultado = await this.citacionRepository.query('SELECT IFNULL(MAX(CODIGO),0)+1 AS NUEVO FROM CITACION');
       return resultado[0]?.NUEVO || 0;
     }
 
   //funcion para buscar el ID maximo para crear un usuario
   async MaximoIntermedia(): Promise<number> {
-    const resultado = await this.citacionRepository.query('SELECT NVL(MAX(CODIGOCITACIONOBSERVADOR),0) AS NUEVO FROM CITACION_OBSERVADOR');
+    const resultado = await this.citacionRepository.query('SELECT IFNULL(MAX(CODIGOCITACIONOBSERVADOR),0)+1 AS NUEVO FROM CITACION_OBSERVADOR');
     return resultado[0]?.NUEVO || 0;
   }
 
