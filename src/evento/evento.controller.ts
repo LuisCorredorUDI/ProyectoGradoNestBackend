@@ -22,7 +22,8 @@ export class EventoController {
 
     const eventos = await this.eventoService.listadoEventosHomeService(consulta);
 
-    const rutaPorDefecto = path.join(__dirname, '..', 'evento\\rutatemporal', `defaultEvent.png`);
+    const rutaPorDefecto = path.join(__dirname, '..', 'evento', 'rutatemporal', 'defaultEvent.png');
+    //const rutaPorDefecto = path.join(__dirname, '..', 'evento/rutatemporal', `defaultEvent.png`);
 
     // Procesamos cada evento para verificar la existencia de la imagen
     const eventosConImagen = eventos.map((evento) => {
@@ -67,7 +68,8 @@ export class EventoController {
       let rutaImagen = null;
       if (createEventoDto.IMAGEN) {
         // Generar la ruta para guardar la imagen
-        rutaImagen = path.join(__dirname, '..', 'evento\\rutatemporal', `Evento${idMaximo}.jpg`);
+        //rutaImagen = path.join(__dirname, '..', 'evento\\rutatemporal', `Evento${idMaximo}.jpg`);
+        rutaImagen = path.join(__dirname, '..', 'evento', 'rutatemporal', `Evento${idMaximo}.jpg`);
 
         // Decodificar la imagen de base64 y guardarla en la carpeta "rutatemporal"
         const imagenBuffer = Buffer.from(createEventoDto.IMAGEN, 'base64');
@@ -101,7 +103,10 @@ export class EventoController {
 
     // Generar la ruta para guardar la imagen
     let rutaImagen = null;
-    rutaImagen = path.join(__dirname, '..', 'evento\\rutatemporal', `Evento${id}.jpg`);
+    //rutaImagen = path.join(__dirname, '..', 'evento\\rutatemporal', `Evento${id}.jpg`);
+    rutaImagen = path.join(__dirname, '..', 'evento', 'rutatemporal', `Evento${id}.jpg`);
+
+
     if (fs.existsSync(rutaImagen)) {
       try {
         fs.unlinkSync(rutaImagen); // Borrar el archivo
