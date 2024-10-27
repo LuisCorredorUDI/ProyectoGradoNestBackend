@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
 import * as firebase from 'firebase-admin';
 import { sendNotificationDTO } from './dto/send-notification.dto';
 
@@ -13,19 +11,24 @@ export class NotificationService {
       await firebase
         .messaging()
         .sendEachForMulticast({
+          tokens: notification.deviceId,
           data: {
             title: notification.title,
             body: notification.body,
           },
-          tokens: notification.deviceId,
+          notification: {
+            title: notification.title,
+            body: notification.body,
+          },
         })
         .catch((error: any) => {
-          console.error(error);
+          console.error('Error enviando la notificación:', error);
         });
     } catch (error) {
-      console.log(error);
+      console.log('Error en sendPush:', error);
       return error;
     }
   }
+  
 
 }

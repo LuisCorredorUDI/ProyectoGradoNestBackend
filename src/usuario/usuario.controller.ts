@@ -21,6 +21,7 @@ export class UsuarioController {
   async ConsultaTokenUsuario(@Param('idUsuario') idUsuario: string, @Res() respuesta) {
     try {
       const consulta = `SELECT TOKEN FROM USUARIO WHERE ID=${idUsuario} `;
+      console.log(consulta);
       const mensaje = await this.usuarioService.consultaToken(consulta);
       return respuesta.status(HttpStatus.OK).json(mensaje);
     }

@@ -17,10 +17,10 @@ export class CitacionController {
                               C.FECHAINICIO, 
                               C.FECHAFIN, 
                               C.USUARIOCITACION,
-                              (SELECT U.NOMBRES||' '||U.APELLIDOS FROM USUARIO U WHERE U.ID = C.USUARIOCITACION) AS NOMBRECITADO,
+                              (SELECT CONCAT(U.NOMBRES,' ',U.APELLIDOS) FROM USUARIO U WHERE U.ID = C.USUARIOCITACION) AS NOMBRECITADO,
                               O.TITULO,
                               O.DETALLE as DETALLEOBSERVACION,
-                              (SELECT U.NOMBRES||' '||U.APELLIDOS FROM USUARIO U WHERE U.ID = O.USUARIOOBSERVACION) AS NOMBREOBSERVACION
+                              (SELECT CONCAT(U.NOMBRES,' ',U.APELLIDOS) FROM USUARIO U WHERE U.ID = O.USUARIOOBSERVACION) AS NOMBREOBSERVACION
                         FROM CITACION C, CITACION_OBSERVADOR CO, OBSERVADOR O
                         WHERE C.CODIGO = CO.CODIGOCITACION
                         AND CO.CODIGOOBSERVADOR = O.CODIGO
@@ -57,7 +57,7 @@ export class CitacionController {
                               C.FECHAINICIO, 
                               C.FECHAFIN, 
                               C.USUARIOCITACION,
-                              (SELECT U.NOMBRES||' '||U.APELLIDOS FROM USUARIO U WHERE U.ID = C.USUARIOCITACION) AS NOMBRECITADO,
+                              (SELECT CONCAT(U.NOMBRES,' ',U.APELLIDOS) FROM USUARIO U WHERE U.ID = C.USUARIOCITACION) AS NOMBRECITADO,
                               (SELECT IFNULL(COUNT(CODIGOCITACION),0) FROM CITACION_OBSERVADOR CO WHERE C.CODIGO = CO.CODIGOCITACION) AS CITACIONESNUM
                         FROM CITACION C
                         WHERE C.CODIGO = ${codCitacion}
