@@ -22,6 +22,10 @@ import { ObservadorController } from './observador/observador.controller';
 import { ObservadorService } from './observador/observador.service';
 import { ConfigModule } from '@nestjs/config';
 import { NotificationModule } from './notification/notification.module';
+import { DeberModule } from './deber/deber.module';
+import { Deber } from './deber/entities/deber.entity';
+import { DeberController } from './deber/deber.controller';
+import { DeberService } from './deber/deber.service';
 
 @Module({
   imports: [
@@ -41,9 +45,10 @@ import { NotificationModule } from './notification/notification.module';
     TypeOrmModule.forFeature([Derecho]),
     TypeOrmModule.forFeature([Citacion]),
     TypeOrmModule.forFeature([Observador]),
+    TypeOrmModule.forFeature([Deber]),
     // para fire base
     ConfigModule.forRoot(),
-    NotificationModule
+    NotificationModule,
   ],
   controllers: [
     AppController,
@@ -53,6 +58,7 @@ import { NotificationModule } from './notification/notification.module';
     DerechoController,
     CitacionController,
     ObservadorController,
+    DeberController,
   ],
   providers: [
     AppService,
@@ -62,6 +68,7 @@ import { NotificationModule } from './notification/notification.module';
     DerechoService,
     CitacionService,
     ObservadorService,
+    DeberService,
   ],
 })
 export class AppModule {}
