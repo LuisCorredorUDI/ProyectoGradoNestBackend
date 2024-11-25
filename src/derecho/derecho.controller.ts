@@ -17,7 +17,7 @@ export class DerechoController {
   async listadoDerechos(@Param('tipoUsuario') tipoUsuario: string, @Res() respuesta) {
     try {
       // Generar la consulta parametrizada
-      const queryConsultaTipoUsuario = `SELECT * FROM DERECHO ORDER BY 2 ASC`;
+      const queryConsultaTipoUsuario = `SELECT * FROM DERECHO ORDER BY 1 ASC`;
       //const queryConsultaTipoUsuario = `SELECT * FROM DERECHO WHERE TIPOUSUARIO = ${tipoUsuario} ORDER BY 1 ASC`;
       console.log(queryConsultaTipoUsuario);
       // Ejecutar la consulta en el servicio

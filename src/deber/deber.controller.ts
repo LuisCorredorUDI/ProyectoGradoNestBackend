@@ -12,7 +12,7 @@ export class DeberController {
   async listadoDeberesController(@Res() respuesta) {
     try {
       // Generar la consulta parametrizada
-      const queryConsultaTipoUsuario = `SELECT * FROM DEBER ORDER BY 2 ASC`;
+      const queryConsultaTipoUsuario = `SELECT * FROM DEBER ORDER BY 1 ASC`;
       console.log(queryConsultaTipoUsuario);
       // Ejecutar la consulta en el servicio
       const debers = await this.deberService.BuscarDeberesServices(queryConsultaTipoUsuario);

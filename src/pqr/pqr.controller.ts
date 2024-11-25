@@ -20,7 +20,7 @@ export class PqrController {
            WHEN 3 THEN 'Media'
            WHEN 4 THEN 'Baja'
            ELSE 'Desconocido'
-       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR = 0 AND USUARIOGENERA = ${id} ORDER BY NUMEROREFERENCIA ASC`;
+       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR = 0 AND USUARIOGENERA = ${id} ORDER BY NUMEROREFERENCIA DESC`;
 
       // Llamar al servicio con la consulta y los parámetros
       const pqrList = await this.pqrService.BusquedaPqrPorUsuario(queryEnvia);
@@ -50,7 +50,7 @@ export class PqrController {
            WHEN 3 THEN 'Media'
            WHEN 4 THEN 'Baja'
            ELSE 'Desconocido'
-       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR != 0 AND USUARIOGENERA = ${id} ORDER BY NUMEROREFERENCIA ASC`;
+       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR != 0 AND USUARIOGENERA = ${id} ORDER BY NUMEROREFERENCIA DESC`;
 
       // Llamar al servicio con la consulta y los parámetros
       const pqrList = await this.pqrService.BusquedaPqrPorUsuario(queryEnvia);
@@ -80,7 +80,7 @@ export class PqrController {
            WHEN 3 THEN 'Media'
            WHEN 4 THEN 'Baja'
            ELSE 'Desconocido'
-       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE USUARIOGENERA = ${id} ORDER BY NUMEROREFERENCIA ASC`;
+       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE USUARIOGENERA = ${id} ORDER BY NUMEROREFERENCIA DESC`;
 
       // Llamar al servicio con la consulta y los parámetros
       const pqrList = await this.pqrService.BusquedaPqrPorUsuario(queryEnvia);
@@ -112,7 +112,7 @@ export class PqrController {
            WHEN 3 THEN 'Media'
            WHEN 4 THEN 'Baja'
            ELSE 'Desconocido'
-       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR = 0 ORDER BY NUMEROREFERENCIA ASC`;
+       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR = 0 ORDER BY NUMEROREFERENCIA DESC `;
 
       // Llamar al servicio con la consulta y los parámetros
       const pqrList = await this.pqrService.BusquedaPqrPorCoordinador(queryEnvia);
@@ -142,7 +142,7 @@ export class PqrController {
            WHEN 3 THEN 'Media'
            WHEN 4 THEN 'Baja'
            ELSE 'Desconocido'
-       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR != 0 ORDER BY NUMEROREFERENCIA ASC`;
+       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR WHERE ESTADOPQR != 0 ORDER BY NUMEROREFERENCIA DESC`;
 
       // Llamar al servicio con la consulta y los parámetros
       const pqrList = await this.pqrService.BusquedaPqrPorCoordinador(queryEnvia);
@@ -172,7 +172,7 @@ export class PqrController {
            WHEN 3 THEN 'Media'
            WHEN 4 THEN 'Baja'
            ELSE 'Desconocido'
-       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR ORDER BY NUMEROREFERENCIA ASC`;
+       END AS NOMBRE_GRAVEDADTIPOPQR FROM PQR ORDER BY NUMEROREFERENCIA DESC`;
 
       // Llamar al servicio con la consulta y los parámetros
       const pqrList = await this.pqrService.BusquedaPqrPorCoordinador(queryEnvia);
